@@ -1,0 +1,2805 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paradise English School</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700;900&family=Mukta:wght@400;700&display=swap" rel="stylesheet">
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDwwZOpGenttWmtl6ee93WuaKphTYyqnbI",
+      authDomain: "paradise-school-1c8ad.firebaseapp.com",
+      projectId: "paradise-school-1c8ad",
+      storageBucket: "paradise-school-1c8ad.firebasestorage.app",
+      messagingSenderId: "318702740885",
+      appId: "1:318702740885:web:b01933214a6f680c5ec29c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    window.db = getFirestore(app);
+  </script>
+
+  <style>
+    @keyframes paradiseLogo {
+      0%, 100% {
+        transform: scale(1) rotate(0deg);
+      }
+      50% {
+        transform: scale(1.08) rotate(2deg);
+      }
+    }
+
+    body {
+      font-family: 'Noto Sans Devanagari', 'Mukta', sans-serif;
+      background: linear-gradient(to bottom right, #e0e7ff, #ffffff, #d1fae5);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="offline-screen" class="hidden fixed inset-0 z-[9999] bg-slate-900/95 flex items-center justify-center p-6 text-center">
+    <div>
+      <div class="text-5xl mb-4">📡</div>
+      <h2 class="text-2xl font-black text-white mb-2">No Internet Connection</h2>
+    </div>
+  </div>
+
+  <div id="screen-login" class="min-h-screen flex justify-center items-center p-4">
+    <div class="bg-white rounded-3xl p-6 shadow-2xl w-full max-w-sm border-t-4 border-indigo-600">
+
+      <div class="text-center mb-4">
+        <div id="school-logo"
+             class="w-24 h-24 mx-auto mb-2 rounded-full flex items-center justify-center
+                    bg-indigo-600 shadow-lg select-none"
+             style="animation: paradiseLogo 2.2s ease-in-out infinite;">
+          <div class="text-center text-white leading-none">
+            <div class="text-3xl">🏫</div>
+            <div class="text-[9px] font-black tracking-wide mt-1">PARADISE</div>
+          </div>
+        </div>
+
+        <h1 class="text-2xl font-black text-indigo-700">
+          Paradise English School
+        </h1>
+
+        <p class="text-xs text-slate-500 mt-1">
+          Khajuri, Nepal
+        </p>
+      </div>
+
+      <div class="flex bg-slate-100 rounded-xl p-1 mb-4">
+
+        <button onclick="setRole('admin')"
+                id="btn-admin"
+                class="flex-1 py-2 text-xs font-bold bg-indigo-600 text-white rounded-lg">
+          Admin/Teacher
+        </button>
+
+        <button onclick="setRole('student')"
+                id="btn-student"
+                class="flex-1 py-2 text-xs font-bold text-slate-600 rounded-lg">
+          Student
+        </button>
+
+      </div>
+
+      <p id="login-error"
+         class="hidden text-rose-600 text-xs mb-2 p-2 bg-rose-50 rounded">
+        Login मिलेन
+      </p>
+
+      <form id="form-admin" class="space-y-3">
+
+        <div>
+          <label class="text-xs font-semibold">इमेल</label>
+          <input id="admin-email"
+                 type="email"
+                 required
+                 class="w-full border-2 p-2 rounded-lg text-sm">
+        </div>
+
+        <div>
+          <label class="text-xs font-semibold">पासवर्ड</label>
+          <input id="admin-pass"
+                 type="password"
+                 required
+                 class="w-full border-2 p-2 rounded-lg text-sm">
+        </div>
+
+        <button class="w-full bg-indigo-600 text-white py-3 rounded-lg font-bold">
+          लग-इन गर्नुहोस्
+        </button>
+
+      </form>
+
+      <form id="form-student" class="space-y-3 hidden">
+
+        <div>
+          <label class="text-xs font-semibold">Class</label>
+
+          <select id="stu-class"
+                  required
+                  class="w-full border-2 p-2 rounded-lg text-sm font-bold">
+          </select>
+        </div>
+
+        <div>
+          <label class="text-xs font-semibold">Roll Number</label>
+
+          <input id="stu-roll"
+                 type="text"
+                 required
+                 class="w-full border-2 p-2 rounded-lg text-sm">
+        </div>
+
+        <button class="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold">
+          Student Login
+        </button>
+
+      </form>
+
+    </div>
+  </div>
+
+
+  <div id="screen-app"
+       class="hidden max-w-md mx-auto bg-slate-50 min-h-screen pb-20">
+
+    <header class="bg-indigo-700 text-white p-3 flex justify-between sticky top-0 z-10">
+
+      <div>
+        <b>Paradise School</b>
+        <br>
+        <span class="text-xs">
+          Role:
+          <span id="my-role"></span>
+        </span>
+      </div>
+
+      <button onclick="logout()"
+              class="bg-rose-600 px-3 py-1 rounded-lg text-xs font-bold">
+        Sign Out
+      </button>
+
+    </header>
+
+
+    <nav id="nav"
+         class="p-2 bg-white flex gap-1 overflow-x-auto sticky top-[52px] z-10 shadow-sm">
+
+      <button onclick="openTab('students', this)"
+              class="tab px-2 py-1 text-xs bg-indigo-600 text-white rounded-lg">
+        विद्यार्थी
+      </button>
+
+      <button onclick="openTab('teachers', this)"
+              class="tab px-2 py-1 text-xs rounded-lg">
+        शिक्षक
+      </button>
+
+      <button onclick="openTab('attendance', this)"
+              class="tab px-2 py-1 text-xs rounded-lg">
+        हाजिरी
+      </button>
+
+      <button onclick="openTab('homework', this)"
+              class="tab px-2 py-1 text-xs rounded-lg">
+        गृहकार्य
+      </button>
+
+      <button onclick="openTab('notice', this)"
+              class="tab px-2 py-1 text-xs rounded-lg">
+        Notice
+      </button>
+
+      <button onclick="openTab('calendar', this)"
+              class="tab px-2 py-1 text-xs rounded-lg">
+        Calendar
+      </button>
+
+    </nav>
+
+
+    <main class="p-3">
+
+      <!-- STUDENTS -->
+
+      <div id="tab-students">
+
+        <div id="box-add-student"
+             class="bg-white p-3 rounded-xl shadow mb-3">
+
+          <b>🎓 विद्यार्थी थप्ने</b>
+
+          <form id="form-add-student"
+                class="mt-2 space-y-2">
+
+            <input id="s-name"
+                   placeholder="विद्यार्थीको नाम"
+                   required
+                   class="w-full border p-2 rounded-lg text-sm">
+
+            <div class="flex gap-2">
+
+              <select id="s-class"
+                      class="w-1/2 border p-2 rounded-lg text-sm font-bold">
+              </select>
+
+              <input id="s-roll"
+                     placeholder="Roll No"
+                     required
+                     class="w-1/2 border p-2 rounded-lg text-sm">
+
+            </div>
+
+            <button class="w-full bg-indigo-600 text-white py-2 rounded-lg font-bold">
+              + थप्नुहोस्
+            </button>
+
+          </form>
+
+        </div>
+
+
+        <div class="bg-white p-3 rounded-xl shadow">
+
+          <b>सूची</b>
+
+          <div id="list-students"
+               class="mt-2 text-sm divide-y">
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- TEACHERS -->
+
+      <div id="tab-teachers" class="hidden">
+
+        <div id="box-add-teacher"
+             class="bg-white p-3 rounded-xl shadow mb-3">
+
+          <b>👨‍🏫 शिक्षक थप्ने</b>
+
+          <form id="form-add-teacher"
+                class="mt-2 space-y-2">
+
+            <input id="t-name"
+                   placeholder="शिक्षकको नाम"
+                   required
+                   class="w-full border p-2 rounded-lg text-sm">
+
+            <input id="t-email"
+                   type="email"
+                   placeholder="email"
+                   required
+                   class="w-full border p-2 rounded-lg text-sm">
+
+            <input id="t-pass"
+                   placeholder="password"
+                   required
+                   class="w-full border p-2 rounded-lg text-sm">
+
+            <select id="t-subject"
+                    required
+                    class="w-full border p-2 rounded-lg text-sm font-bold">
+              <option value="">Subject छान्नुहोस्</option>
+              <option value="Mathematics">Mathematics</option>
+              <option value="Science">Science</option>
+              <option value="English">English</option>
+              <option value="Nepali">Nepali</option>
+              <option value="Social Studies">Social Studies</option>
+              <option value="Computer">Computer</option>
+              <option value="General Knowledge">General Knowledge</option>
+              <option value="Others">Others</option>
+            </select>
+
+            <select id="t-class"
+                    required
+                    class="w-full border p-2 rounded-lg text-sm font-bold">
+            </select>
+
+            <button class="w-full bg-indigo-600 text-white py-2 rounded-lg font-bold">
+              + थप्नुहोस्
+            </button>
+
+          </form>
+
+        </div>
+
+
+        <div class="bg-white p-3 rounded-xl shadow">
+
+          <b>सूची</b>
+
+          <div id="list-teachers"
+               class="mt-2 text-sm divide-y">
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- ATTENDANCE -->
+
+      <div id="tab-attendance" class="hidden">
+
+        <div class="bg-white p-3 rounded-xl shadow">
+
+          <b>
+            📋 हाजिरी -
+            <span id="today"></span>
+          </b>
+
+          <div id="att-class-box"
+               class="mt-2">
+          </div>
+
+          <div id="box-att-mark"
+               class="mt-2">
+          </div>
+
+          <div id="list-att"
+               class="mt-2 text-sm space-y-1">
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- HOMEWORK -->
+
+      <div id="tab-homework" class="hidden">
+
+        <div id="box-add-hw"
+             class="bg-white p-3 rounded-xl shadow mb-3">
+
+          <b>📚 गृहकार्य पोस्ट</b>
+
+          <form id="form-add-hw"
+                class="mt-2">
+
+            <select id="hw-subject"
+                    required
+                    class="w-full border p-2 rounded-lg text-sm font-bold mb-2">
+              <option value="">Subject छान्नुहोस्</option>
+            </select>
+
+            <select id="hw-class"
+                    required
+                    class="w-full border p-2 rounded-lg text-sm font-bold mb-2">
+            </select>
+
+            <input id="hw-txt"
+                   required
+                   placeholder="गृहकार्य लेख्नुहोस्"
+                   class="w-full border p-2 rounded-lg text-sm mb-2">
+
+            <input id="hw-deadline"
+                   type="date"
+                   required
+                   class="w-full border p-2 rounded-lg text-sm mb-2">
+
+            <button class="w-full bg-indigo-600 text-white py-2 rounded-lg font-bold">
+              पोस्ट
+            </button>
+
+          </form>
+
+        </div>
+
+
+        <div class="bg-white p-3 rounded-xl shadow">
+
+          <b>सूची</b>
+
+          <div id="list-hw"
+               class="mt-2 text-sm space-y-2">
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- NOTICE -->
+
+      <div id="tab-notice" class="hidden">
+
+        <div id="box-add-notice"
+             class="bg-white p-3 rounded-xl shadow mb-3">
+
+          <b>📢 Notice पोस्ट</b>
+
+          <form id="form-add-notice"
+                class="mt-2">
+
+            <select id="nt-class"
+                    required
+                    class="w-full border p-2 rounded-lg text-sm font-bold mb-2">
+            </select>
+
+            <input id="nt-txt"
+                   required
+                   placeholder="Notice लेख्नुहोस्"
+                   class="w-full border p-2 rounded-lg text-sm mb-2">
+
+            <input id="nt-deadline"
+                   type="date"
+                   required
+                   class="w-full border p-2 rounded-lg text-sm mb-2">
+
+            <button class="w-full bg-indigo-600 text-white py-2 rounded-lg font-bold">
+              पोस्ट
+            </button>
+
+          </form>
+
+        </div>
+
+
+        <div class="bg-white p-3 rounded-xl shadow">
+
+          <b>सूची</b>
+
+          <div id="list-nt"
+               class="mt-2 text-sm space-y-2">
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- CALENDAR -->
+
+      <div id="tab-calendar" class="hidden">
+
+        <div id="box-add-ev"
+             class="bg-white p-3 rounded-xl shadow mb-3">
+
+          <b>📅 Event थप्ने</b>
+
+          <form id="form-add-ev"
+                class="mt-2">
+
+            <select id="ev-class"
+                    required
+                    class="w-full border p-2 rounded-lg text-sm font-bold mb-2">
+            </select>
+
+            <input id="ev-txt"
+                   required
+                   placeholder="Event"
+                   class="w-full border p-2 rounded-lg text-sm mb-2">
+
+            <input id="ev-date"
+                   type="date"
+                   required
+                   class="w-full border p-2 rounded-lg text-sm mb-2">
+
+            <button class="w-full bg-indigo-600 text-white py-2 rounded-lg font-bold">
+              थप्नुहोस्
+            </button>
+
+          </form>
+
+        </div>
+
+
+        <div class="bg-white p-3 rounded-xl shadow">
+
+          <b>सूची</b>
+
+          <div id="list-ev"
+               class="mt-2 text-sm space-y-2">
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- STUDENT DASHBOARD -->
+
+      <div id="tab-student" class="hidden">
+
+        <div class="bg-white p-4 rounded-xl shadow text-center mb-3">
+
+          <b class="text-lg">
+            नमस्ते
+            <span id="stu-name"></span>
+          </b>
+
+          <p class="text-sm mt-1">
+
+            Class:
+            <span id="stu-cls"
+                  class="font-bold">
+            </span>
+
+            |
+
+            Roll:
+            <span id="stu-roll-view"
+                  class="font-bold">
+            </span>
+
+          </p>
+
+        </div>
+
+
+        <div class="bg-white p-3 rounded-xl shadow mb-3">
+
+          <b>📋 मेरो हाजिरी</b>
+
+          <div id="stu-att"
+               class="text-sm mt-1">
+          </div>
+
+        </div>
+
+
+        <div class="bg-white p-3 rounded-xl shadow mb-3">
+
+          <b>📚 गृहकार्य</b>
+
+          <div id="stu-hw"
+               class="text-sm mt-1">
+          </div>
+
+        </div>
+
+
+        <div class="bg-white p-3 rounded-xl shadow mb-3">
+
+          <b>📢 Notice</b>
+
+          <div id="stu-nt"
+               class="text-sm mt-1">
+          </div>
+
+        </div>
+
+
+        <div class="bg-white p-3 rounded-xl shadow">
+
+          <b>📅 Calendar</b>
+
+          <div id="stu-ev"
+               class="text-sm mt-1">
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+
+<script type="module">
+
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  query,
+  where,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+
+const db = window.db;
+
+let me = null;
+
+const today =
+  new Date().toISOString().split('T')[0];
+
+
+// Nepali B.S. date helper
+
+const BS_MONTH_DATA = {
+  2000:[30,32,31,32,31,30,30,30,29,30,29,31],
+  2001:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2002:[31,31,32,32,31,30,30,29,30,29,30,30],
+  2003:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2004:[30,32,31,32,31,30,30,30,29,30,29,31],
+  2005:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2006:[31,31,32,32,31,30,30,29,30,29,30,30],
+  2007:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2008:[31,31,31,32,31,31,30,29,30,29,30,30],
+  2009:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2010:[31,31,32,32,31,30,30,29,30,29,30,30],
+  2011:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2012:[31,31,31,32,31,31,30,29,30,29,30,30],
+  2013:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2014:[31,31,32,32,31,30,30,29,30,29,30,30],
+  2015:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2016:[31,31,31,32,31,31,30,29,30,29,30,30],
+  2017:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2018:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2019:[31,32,31,32,31,30,30,30,29,30,29,31],
+  2020:[31,31,31,32,31,31,30,29,30,29,30,30],
+  2021:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2022:[31,32,31,32,31,30,30,30,29,29,30,30],
+  2023:[31,32,31,32,31,30,30,30,29,30,29,31],
+  2024:[31,31,31,32,31,31,30,29,30,29,30,30],
+  2025:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2026:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2027:[30,32,31,32,31,30,30,30,29,30,29,31],
+  2028:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2029:[31,31,32,31,32,30,30,29,30,29,30,30],
+  2030:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2031:[30,32,31,32,31,30,30,30,29,30,29,31],
+  2032:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2033:[31,31,32,32,31,30,30,29,30,29,30,30],
+  2034:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2035:[30,32,31,32,31,31,29,30,30,29,29,31],
+  2036:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2037:[31,31,32,32,31,30,30,29,30,29,30,30],
+  2038:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2039:[31,31,31,32,31,31,30,29,30,29,30,30],
+  2040:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2041:[31,31,32,32,31,30,30,29,30,29,30,30],
+  2042:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2043:[31,31,31,32,31,31,30,29,30,29,30,30],
+  2044:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2045:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2046:[31,32,31,32,31,30,30,30,29,30,29,31],
+  2047:[31,31,31,32,31,31,30,29,30,29,30,30],
+  2048:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2049:[31,32,31,32,31,30,30,30,29,29,30,30],
+  2050:[31,32,31,32,31,30,30,30,29,30,29,31],
+  2051:[31,31,31,32,31,31,30,29,30,29,30,30],
+  2052:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2053:[31,32,31,32,31,30,30,30,29,29,30,30],
+  2054:[31,32,31,32,31,30,30,30,29,30,29,31],
+  2055:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2056:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2057:[31,32,31,32,31,30,30,30,29,29,30,30],
+  2058:[31,32,31,32,31,30,30,30,29,30,29,31],
+  2059:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2060:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2061:[31,32,31,32,31,30,30,30,29,29,30,30],
+  2062:[30,32,31,32,31,31,29,30,29,30,29,31],
+  2063:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2064:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2065:[31,32,31,32,31,30,30,30,29,29,30,30],
+  2066:[31,32,31,32,31,30,30,30,29,30,29,31],
+  2067:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2068:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2069:[31,32,31,32,31,30,30,30,29,29,30,30],
+  2070:[31,32,31,32,31,30,30,30,29,30,29,31],
+  2071:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2072:[31,32,31,32,31,30,30,29,30,29,30,30],
+  2073:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2074:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2075:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2076:[31,32,31,32,31,30,30,30,29,29,30,30],
+  2077:[31,32,31,32,31,30,30,30,29,30,29,31],
+  2078:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2079:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2080:[31,32,31,32,31,30,30,30,29,29,30,30],
+  2081:[31,32,31,32,31,30,30,30,29,30,29,31],
+  2082:[30,32,31,32,31,30,30,30,29,30,30,30],
+  2083:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2084:[31,31,32,32,31,30,30,29,30,29,30,30],
+  2085:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2086:[30,32,31,32,31,30,30,30,29,30,29,31],
+  2087:[31,31,32,31,31,31,30,29,30,29,30,30],
+  2088:[31,31,32,32,31,30,30,29,30,29,30,30],
+  2089:[31,32,31,32,31,30,30,30,29,29,30,31],
+  2090:[30,32,31,32,31,30,30,30,29,30,29,31]
+};
+
+function adToBs(adDate){
+  const target = new Date(adDate + 'T00:00:00');
+  const base = new Date('1943-04-14T00:00:00');
+  let days = Math.floor((target - base) / 86400000);
+
+  let y = 2000;
+  let m = 0;
+  let d = 1;
+
+  while(days > 0 && BS_MONTH_DATA[y]){
+    const mdays = BS_MONTH_DATA[y][m];
+
+    if(days >= mdays){
+      days -= mdays;
+      m++;
+
+      if(m === 12){
+        m = 0;
+        y++;
+      }
+    } else {
+      d += days;
+      days = 0;
+    }
+  }
+
+  return `${y}-${String(m + 1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+
+const todayBS = adToBs(today);
+
+
+// All classes
+
+const CLASSES = [
+  'PG',
+  'Nursery',
+  'LKG',
+  'UKG',
+  '1',
+  '2',
+  '3',
+  '4',
+  '5'
+];
+
+
+// Fill class dropdown
+
+function fillClassSelect(id, includeAll=false) {
+
+  const el = document.getElementById(id);
+
+  if(!el) return;
+
+  el.innerHTML =
+    (includeAll
+      ? '<option value="ALL">All Classes</option>'
+      : '') +
+
+    CLASSES
+      .map(c =>
+        `<option value="${c}">${c}</option>`
+      )
+      .join('');
+}
+
+
+[
+  'stu-class',
+  's-class',
+  't-class',
+  'hw-class',
+  'nt-class',
+  'ev-class'
+].forEach(
+  id => fillClassSelect(id)
+);
+
+
+document.getElementById('today').innerText =
+  todayBS;
+
+
+// Admin login
+
+const USERS = [
+  {
+    id:'admin1',
+    email:'admin@paradise.com',
+    pass:'admin123',
+    role:'admin',
+    name:'Admin'
+  }
+];
+
+
+// Page load
+
+window.onload = () => {
+
+  const savedUser =
+    localStorage.getItem('paradise_user');
+
+  if(savedUser){
+
+    try {
+
+      enter(JSON.parse(savedUser));
+
+    } catch(e) {
+
+      localStorage.removeItem(
+        'paradise_user'
+      );
+
+    }
+
+  }
+
+};
+
+
+// Login role
+
+window.setRole = (r) => {
+
+  document.getElementById(
+    'btn-admin'
+  ).className =
+    r === 'admin'
+      ? 'flex-1 py-2 text-xs font-bold bg-indigo-600 text-white rounded-lg'
+      : 'flex-1 py-2 text-xs font-bold text-slate-600 rounded-lg';
+
+
+  document.getElementById(
+    'btn-student'
+  ).className =
+    r === 'student'
+      ? 'flex-1 py-2 text-xs font-bold bg-indigo-600 text-white rounded-lg'
+      : 'flex-1 py-2 text-xs font-bold text-slate-600 rounded-lg';
+
+
+  document.getElementById(
+    'form-admin'
+  ).classList.toggle(
+    'hidden',
+    r === 'student'
+  );
+
+
+  document.getElementById(
+    'form-student'
+  ).classList.toggle(
+    'hidden',
+    r === 'admin'
+  );
+
+
+  document.getElementById(
+    'login-error'
+  ).classList.add('hidden');
+
+};
+
+
+// Admin / Teacher Login
+
+document.getElementById(
+  'form-admin'
+).addEventListener(
+  'submit',
+  async (e) => {
+
+    e.preventDefault();
+
+    document.getElementById(
+      'login-error'
+    ).classList.add('hidden');
+
+
+    let email =
+      document.getElementById(
+        'admin-email'
+      ).value.trim();
+
+
+    let pass =
+      document.getElementById(
+        'admin-pass'
+      ).value;
+
+
+    let u =
+      USERS.find(
+        x =>
+          x.email === email &&
+          x.pass === pass
+      );
+
+
+    // Teacher login
+
+    if(!u){
+
+      const snap =
+        await getDocs(
+          query(
+            collection(db,"teachers"),
+            where("email","==",email),
+            where("pass","==",pass)
+          )
+        );
+
+
+      if(!snap.empty){
+
+        const data =
+          snap.docs[0].data();
+
+
+        if(!data.cls){
+
+          document.getElementById(
+            'login-error'
+          ).innerText =
+            'यो शिक्षकमा Class assign गरिएको छैन। Admin बाट Class assign गर्नुहोस्।';
+
+
+          document.getElementById(
+            'login-error'
+          ).classList.remove(
+            'hidden'
+          );
+
+          return;
+        }
+
+
+        u = {
+          ...data,
+          id:snap.docs[0].id,
+          role:'teacher'
+        };
+
+      }
+
+    }
+
+
+    if(u){
+
+      localStorage.setItem(
+        'paradise_user',
+        JSON.stringify(u)
+      );
+
+      enter(u);
+
+    } else {
+
+      document.getElementById(
+        'login-error'
+      ).innerText =
+        'Login मिलेन';
+
+
+      document.getElementById(
+        'login-error'
+      ).classList.remove(
+        'hidden'
+      );
+
+    }
+
+  }
+);
+
+
+// Student login
+
+document.getElementById(
+  'form-student'
+).addEventListener(
+  'submit',
+  async (e) => {
+
+    e.preventDefault();
+
+    document.getElementById(
+      'login-error'
+    ).classList.add('hidden');
+
+
+    let cls =
+      document.getElementById(
+        'stu-class'
+      ).value;
+
+
+    let roll =
+      document.getElementById(
+        'stu-roll'
+      ).value.trim();
+
+
+    const q =
+      query(
+        collection(db,"students"),
+        where("cls","==",cls),
+        where("roll","==",roll)
+      );
+
+
+    const snap =
+      await getDocs(q);
+
+
+    if(!snap.empty){
+
+      let u = {
+        ...snap.docs[0].data(),
+        id:snap.docs[0].id,
+        role:'student'
+      };
+
+
+      localStorage.setItem(
+        'paradise_user',
+        JSON.stringify(u)
+      );
+
+
+      enter(u);
+
+    } else {
+
+      document.getElementById(
+        'login-error'
+      ).innerText =
+        'Login मिलेन';
+
+
+      document.getElementById(
+        'login-error'
+      ).classList.remove(
+        'hidden'
+      );
+
+    }
+
+  }
+);
+
+
+// Enter app
+
+function enter(u){
+
+  me = u;
+
+  if(navigator.onLine) enableNotifications();
+
+
+  document.getElementById(
+    'screen-login'
+  ).classList.add('hidden');
+
+
+  document.getElementById(
+    'screen-app'
+  ).classList.remove('hidden');
+
+
+  document.getElementById(
+    'my-role'
+  ).innerText =
+    u.role +
+    (u.cls
+      ? ' - Class ' + u.cls
+      : '') +
+    (u.subject
+      ? ' - Subject: ' + u.subject
+      : '');
+
+
+  const isAdmin =
+    u.role === 'admin';
+
+
+  const isTeacher =
+    u.role === 'teacher';
+
+
+  const isStudent =
+    u.role === 'student';
+
+
+  document.getElementById(
+    'nav'
+  ).classList.toggle(
+    'hidden',
+    isStudent
+  );
+
+
+  document.getElementById(
+    'box-add-student'
+  ).classList.toggle(
+    'hidden',
+    !(isAdmin || isTeacher)
+  );
+
+
+  document.getElementById(
+    'box-add-teacher'
+  ).classList.toggle(
+    'hidden',
+    !isAdmin
+  );
+
+
+  document.getElementById(
+    'box-add-hw'
+  ).classList.toggle(
+    'hidden',
+    !(isAdmin || isTeacher)
+  );
+
+
+  document.getElementById(
+    'box-add-notice'
+  ).classList.toggle(
+    'hidden',
+    !(isAdmin || isTeacher)
+  );
+
+
+  document.getElementById(
+    'box-add-ev'
+  ).classList.toggle(
+    'hidden',
+    !(isAdmin || isTeacher)
+  );
+
+
+  setupClassControls();
+
+
+  if(isStudent){
+
+    openTab(
+      'student',
+      document.querySelector('.tab')
+    );
+
+    showStudent(u.id);
+
+  } else {
+
+    openTab(
+      'students',
+      document.querySelector('.tab')
+    );
+
+    loadAll();
+
+  }
+
+}
+
+
+// Class controls
+
+function setupClassControls(){
+
+  const teacher =
+    me &&
+    me.role === 'teacher';
+
+
+  // Homework Subject dropdown - only show teacher's subject
+  const hwSubject = document.getElementById('hw-subject');
+  if(hwSubject){
+    if(teacher && me.subject){
+      hwSubject.innerHTML = `<option value="${me.subject}">${me.subject}</option>`;
+      hwSubject.disabled = true;
+    } else if(me.role === 'admin'){
+      hwSubject.innerHTML = `
+        <option value="">Subject छान्नुहोस्</option>
+        <option value="Mathematics">Mathematics</option>
+        <option value="Science">Science</option>
+        <option value="English">English</option>
+        <option value="Nepali">Nepali</option>
+        <option value="Social Studies">Social Studies</option>
+        <option value="Computer">Computer</option>
+        <option value="General Knowledge">General Knowledge</option>
+        <option value="Others">Others</option>
+      `;
+      hwSubject.disabled = false;
+    }
+  }
+
+
+  // Homework / Notice / Calendar class
+
+  [
+    'hw-class',
+    'nt-class',
+    'ev-class'
+  ].forEach(id => {
+
+    const el =
+      document.getElementById(id);
+
+    if(!el) return;
+
+
+    el.innerHTML = teacher
+
+      ? `<option value="${me.cls}">
+           ${me.cls}
+         </option>`
+
+      : '<option value="ALL">All Classes</option>' +
+        CLASSES
+          .map(c =>
+            `<option value="${c}">
+              ${c}
+             </option>`
+          )
+          .join('');
+
+
+    el.value =
+      teacher
+        ? me.cls
+        : 'ALL';
+
+
+    el.disabled =
+      teacher;
+
+  });
+
+
+  // Attendance class
+
+  const attBox =
+    document.getElementById(
+      'att-class-box'
+    );
+
+
+  if(teacher){
+
+    attBox.innerHTML =
+      `<div class="p-2 bg-indigo-50 rounded-lg text-sm font-bold">
+        Class: ${me.cls}
+       </div>`;
+
+  }
+
+  else if(
+    me &&
+    me.role === 'admin'
+  ){
+
+    attBox.innerHTML =
+      `<select id="att-class"
+               class="w-full border p-2 rounded-lg text-sm font-bold">
+
+        <option value="">
+          Class छान्नुहोस्
+        </option>
+
+        ${
+          CLASSES
+            .map(c =>
+              `<option value="${c}">
+                ${c}
+               </option>`
+            )
+            .join('')
+        }
+
+       </select>`;
+
+
+    document.getElementById(
+      'att-class'
+    ).onchange =
+      loadAttendanceStudents;
+
+  }
+
+}
+
+
+// Internet connection + notifications
+
+const offlineScreen =
+  document.getElementById('offline-screen');
+
+function updateConnectionStatus(){
+  const offline = !navigator.onLine;
+  offlineScreen.classList.toggle('hidden', !offline);
+}
+
+window.addEventListener('offline', updateConnectionStatus);
+window.addEventListener('online', updateConnectionStatus);
+updateConnectionStatus();
+
+let notificationPermissionAsked = false;
+const notifiedItems = new Set();
+
+async function enableNotifications(){
+  if(!('Notification' in window)) return false;
+  if(Notification.permission === 'default' && !notificationPermissionAsked){
+    notificationPermissionAsked = true;
+    try {
+      await Notification.requestPermission();
+    } catch(e) {}
+  }
+  return Notification.permission === 'granted';
+}
+
+function pushAppNotification(title, body){
+  if(!('Notification' in window) || Notification.permission !== 'granted') return;
+  try {
+    new Notification(title, {
+      body,
+      icon: './school-logo.png',
+      tag: 'paradise-school'
+    });
+  } catch(e) {}
+}
+
+function notifyNewDocs(snap, type, classFilter){
+  const docs = snap.docChanges().filter(c => c.type === 'added');
+  docs.forEach(change => {
+    const d = change.doc;
+    const x = d.data();
+    if(classFilter && x.cls !== classFilter && x.cls !== 'ALL') return;
+    const key = type + ':' + d.id;
+    if(notifiedItems.has(key)) return;
+    notifiedItems.add(key);
+    if(window.__initialSnapshotDone){
+      const title = type === 'notice' ? '📢 New Notice' : type === 'homework' ? '📚 New Homework' : '📋 Attendance Updated';
+      const body = x.t || (x.n ? `${x.n} - ${x.st}` : 'New update available');
+      pushAppNotification(title, body);
+    }
+  });
+  window.__initialSnapshotDone = true;
+}
+
+// Request notification permission after a successful login.
+window.enableParadiseNotifications = enableNotifications;
+
+// Logout
+
+window.logout = () => {
+
+  localStorage.removeItem(
+    'paradise_user'
+  );
+
+  me = null;
+
+  document.getElementById('screen-app').classList.add('hidden');
+  document.getElementById('screen-login').classList.remove('hidden');
+
+  document.getElementById('form-admin').reset();
+  document.getElementById('form-student').reset();
+  document.getElementById('login-error').classList.add('hidden');
+
+};
+
+
+// Open tab
+
+window.openTab = (t, btn) => {
+
+  document
+    .querySelectorAll('main > div')
+    .forEach(
+      d =>
+        d.classList.add('hidden')
+    );
+
+
+  document.getElementById(
+    'tab-' + t
+  ).classList.remove(
+    'hidden'
+  );
+
+
+  document
+    .querySelectorAll('.tab')
+    .forEach(
+      b =>
+        b.className =
+          'tab px-2 py-1 text-xs rounded-lg'
+    );
+
+
+  if(btn){
+
+    btn.className =
+      'tab px-2 py-1 text-xs bg-indigo-600 text-white rounded-lg';
+
+  }
+
+
+  if(
+    t === 'attendance' &&
+    me &&
+    me.role === 'admin'
+  ){
+
+    const s =
+      document.getElementById(
+        'att-class'
+      );
+
+
+    if(s)
+      loadAttendanceStudents();
+
+  }
+
+};
+
+
+// Load everything
+
+function loadAll(){
+
+  liveStudents();
+
+  liveTeachers();
+
+  liveAtt();
+
+  liveHW();
+
+  liveNT();
+
+  liveEV();
+
+}
+
+
+// Add student
+
+document.getElementById(
+  'form-add-student'
+).addEventListener(
+  'submit',
+  async (e) => {
+
+    e.preventDefault();
+
+
+    let cls =
+      document.getElementById(
+        's-class'
+      ).value;
+
+
+    if(
+      me.role === 'teacher' &&
+      cls !== me.cls
+    ){
+
+      alert(
+        'तपाईंलाई आफ्नो assigned class मा मात्र विद्यार्थी थप्न अनुमति छ।'
+      );
+
+      return;
+
+    }
+
+
+    await addDoc(
+      collection(db,"students"),
+      {
+        name:
+          document.getElementById(
+            's-name'
+          ).value.trim(),
+
+        cls:cls,
+
+        roll:
+          document.getElementById(
+            's-roll'
+          ).value.trim()
+      }
+    );
+
+
+    e.target.reset();
+
+  }
+);
+
+
+// Student live list
+
+function liveStudents(){
+
+  onSnapshot(
+    collection(db,"students"),
+    (snap) => {
+
+      let canDelete =
+        me.role === 'admin' ||
+        me.role === 'teacher';
+
+
+      const docs =
+        me.role === 'teacher'
+          ? snap.docs.filter(
+              d =>
+                d.data().cls === me.cls
+            )
+          : snap.docs;
+
+
+      document.getElementById(
+        'list-students'
+      ).innerHTML =
+
+        docs.map(d => {
+
+          let s =
+            d.data();
+
+
+          return `
+            <div class="flex justify-between py-2">
+
+              <div>
+                ${s.name}
+
+                <br>
+
+                <span class="text-xs text-slate-500">
+                  ${s.cls} - Roll: ${s.roll}
+                </span>
+              </div>
+
+              ${
+                canDelete
+                  ? `
+                    <button
+                      onclick="delDoc('students','${d.id}')"
+                      class="text-rose-600 text-xs font-bold">
+                      Delete
+                    </button>
+                    `
+                  : ''
+              }
+
+            </div>
+          `;
+
+        }).join('')
+
+        ||
+
+        '<p class="text-slate-400">विद्यार्थी छैन</p>';
+
+    }
+  );
+
+}
+
+
+// Add teacher
+
+document.getElementById(
+  'form-add-teacher'
+).addEventListener(
+  'submit',
+  async (e) => {
+
+    e.preventDefault();
+
+
+    await addDoc(
+      collection(db,"teachers"),
+      {
+
+        name:
+          document.getElementById(
+            't-name'
+          ).value.trim(),
+
+        email:
+          document.getElementById(
+            't-email'
+          ).value.trim(),
+
+        pass:
+          document.getElementById(
+            't-pass'
+          ).value,
+
+        subject:
+          document.getElementById(
+            't-subject'
+          ).value,
+
+        cls:
+          document.getElementById(
+            't-class'
+          ).value
+
+      }
+    );
+
+
+    e.target.reset();
+
+  }
+);
+
+
+// Teachers list
+
+function liveTeachers(){
+
+  onSnapshot(
+    collection(db,"teachers"),
+    (snap) => {
+
+      document.getElementById(
+        'list-teachers'
+      ).innerHTML =
+
+        snap.docs.map(d => {
+
+          let t =
+            d.data();
+
+
+          return `
+            <div class="flex justify-between py-2">
+
+              <div>
+
+                ${t.name}
+
+                <br>
+
+                <span class="text-xs text-slate-500">
+                  ${t.email} • Subject: ${t.subject || 'N/A'} • Class: ${t.cls || 'Unassigned'}
+                </span>
+
+              </div>
+
+              ${
+                me.role === 'admin'
+                  ? `
+                    <button
+                      onclick="delDoc('teachers','${d.id}')"
+                      class="text-rose-600 text-xs font-bold">
+                      Delete
+                    </button>
+                    `
+                  : ''
+              }
+
+            </div>
+          `;
+
+        }).join('')
+
+        ||
+
+        '<p class="text-slate-400">शिक्षक छैन</p>';
+
+    }
+  );
+
+}
+
+
+// Delete
+
+window.delDoc =
+  async (col,id) =>
+    await deleteDoc(
+      doc(db,col,id)
+    );
+
+
+
+// Delete attendance
+
+window.delAttendance = async (id, cls) => {
+
+  if(
+    me.role === 'teacher' &&
+    cls !== me.cls
+  ){
+
+    alert(
+      'तपाईं आफ्नो assigned class को मात्र हाजिरी delete गर्न सक्नुहुन्छ।'
+    );
+
+    return;
+
+  }
+
+  await deleteDoc(
+    doc(db,"attendance",id)
+  );
+
+};
+
+
+// Load students for attendance
+
+async function loadAttendanceStudents(){
+
+  if(
+    !me ||
+    (
+      me.role !== 'admin' &&
+      me.role !== 'teacher'
+    )
+  )
+    return;
+
+
+  let cls =
+    me.role === 'teacher'
+
+      ? me.cls
+
+      : document.getElementById(
+          'att-class'
+        )?.value;
+
+
+  if(!cls){
+
+    document.getElementById(
+      'box-att-mark'
+    ).innerHTML =
+      '<p class="text-slate-400 text-center">पहिला Class छान्नुहोस्</p>';
+
+    return;
+
+  }
+
+
+  const snap =
+    await getDocs(
+      collection(db,"students")
+    );
+
+
+  const students =
+    snap.docs.filter(
+      d =>
+        d.data().cls === cls
+    );
+
+
+  document.getElementById(
+    'box-att-mark'
+  ).innerHTML =
+
+    `
+      <button
+        id="btn-save-att"
+        class="w-full bg-emerald-600 text-white py-2 rounded-lg mb-2 font-bold">
+
+        हाजिरी Save गर्नुहोस्
+
+      </button>
+    ` +
+
+    (
+
+      students
+        .map(d => {
+
+          let s =
+            d.data();
+
+
+          return `
+            <div class="flex justify-between py-1 bg-slate-50 px-2 rounded mb-1">
+
+              <div>
+
+                ${s.name}
+
+                <br>
+
+                <span class="text-xs">
+                  ${s.cls}-${s.roll}
+                </span>
+
+              </div>
+
+
+              <select
+                id="a${d.id}"
+                class="border rounded text-xs">
+
+                <option>
+                  Present
+                </option>
+
+                <option>
+                  Absent
+                </option>
+
+              </select>
+
+            </div>
+          `;
+
+        }).join('')
+
+      ||
+
+      '<p class="text-slate-400">यो Class मा विद्यार्थी छैन</p>'
+
+    );
+
+
+  document.getElementById(
+    'btn-save-att'
+  )?.addEventListener(
+    'click',
+    () =>
+      saveAtt(
+        cls,
+        students
+      )
+  );
+
+}
+
+
+// Attendance live
+
+function liveAtt(){
+
+  if(
+    me.role === 'admin' ||
+    me.role === 'teacher'
+  ){
+
+    if(
+      me.role === 'teacher'
+    )
+      loadAttendanceStudents();
+
+  }
+
+
+  onSnapshot(
+    collection(db,"attendance"),
+    (snap) => {
+
+      notifyNewDocs(snap, 'attendance', me.role === 'teacher' || me.role === 'student' ? me.cls : null);
+
+      let docs =
+        snap.docs
+
+          .filter(d => {
+
+            let a =
+              d.data();
+
+
+            return (
+              me.role === 'admin' ||
+              a.cls === me.cls
+            );
+
+          })
+
+          .sort(
+            (a,b) =>
+              (b.data().d || '')
+              .localeCompare(
+                a.data().d || ''
+              )
+          )
+
+          .slice(0,20);
+
+
+      document.getElementById(
+        'list-att'
+      ).innerHTML =
+
+        docs.map(d => {
+
+          let a =
+            d.data();
+
+
+          return `
+            <div class="flex justify-between items-center p-1 bg-slate-50 rounded">
+
+              <span>
+
+                ${a.n} - ${a.bs || adToBs(a.d)}
+
+                <span class="text-[10px] text-slate-500">
+                  (${a.cls || ''})
+                </span>
+
+              </span>
+
+              <div class="flex items-center gap-2">
+
+                <span
+                  class="${
+                    a.st === 'Present'
+                      ? 'text-emerald-600'
+                      : 'text-rose-600'
+                  } font-bold">
+
+                  ${a.st}
+
+                </span>
+
+                ${
+                  (me.role === 'admin' || me.role === 'teacher')
+                    ? `
+                        <button
+                          onclick="delAttendance('${d.id}','${a.cls || ''}')"
+                          class="text-rose-600 text-xs font-bold">
+                          Delete
+                        </button>
+                      `
+                    : ''
+                }
+
+              </div>
+
+            </div>
+          `;
+
+        }).join('')
+
+        ||
+
+        '<p class="text-center text-slate-400">Data छैन</p>';
+
+    }
+  );
+
+}
+
+
+// Save attendance
+
+async function saveAtt(
+  cls,
+  students
+){
+
+  if(
+    me.role === 'teacher' &&
+    cls !== me.cls
+  ){
+
+    alert(
+      'तपाईं आफ्नो assigned class को मात्र हाजिरी राख्न सक्नुहुन्छ।'
+    );
+
+    return;
+
+  }
+
+
+  for(
+    const d of students
+  ){
+
+    const statusEl =
+      document.getElementById(
+        'a' + d.id
+      );
+
+
+    if(statusEl){
+
+      const existing = await getDocs(
+        query(
+          collection(db,"attendance"),
+          where("sid","==",d.id),
+          where("cls","==",cls),
+          where("d","==",today)
+        )
+      );
+
+      if(existing.empty){
+        await addDoc(
+          collection(
+            db,
+            "attendance"
+          ),
+          {
+            sid:d.id,
+            n:d.data().name,
+            cls:cls,
+            d:today,
+            bs:todayBS,
+            st:statusEl.value
+          }
+        );
+      }
+
+    }
+
+  }
+
+
+  alert(
+    'हाजिरी Saved'
+  );
+
+}
+
+function getDaysRemaining(deadlineDate) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const deadline = new Date(deadlineDate);
+  deadline.setHours(0, 0, 0, 0);
+  
+  const diffTime = deadline - today;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  return diffDays;
+}
+
+function renderDaysLeft(deadlineDate) {
+  const days = getDaysRemaining(deadlineDate);
+  
+  if (days > 0) {
+    return `<span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">${days} day${days > 1 ? 's' : ''} left</span>`;
+  } else if (days === 0) {
+    return `<span class="text-xs font-bold text-yellow-600 bg-yellow-50 px-2 py-1 rounded">Today is deadline</span>`;
+  } else {
+    const daysAgo = Math.abs(days);
+    return `<span class="text-xs font-bold text-rose-600 bg-rose-50 px-2 py-1 rounded">${daysAgo} day${daysAgo > 1 ? 's' : ''} ago</span>`;
+  }
+}
+
+
+// Homework / Notice / Calendar list
+
+function renderList(
+  targetId,
+  docs,
+  bgClass,
+  colName,
+  isAttendance = false,
+  isHomework = false,
+  isNotice = false,
+  isEvent = false
+){
+
+  let canDelete =
+    me.role === 'admin' ||
+    me.role === 'teacher';
+
+
+  let filtered =
+    docs.filter(
+      d => {
+
+        const x =
+          d.data();
+
+        if(isHomework && me.role === 'teacher' && me.subject) {
+          return x.subject === me.subject;
+        }
+
+        return (
+          me.role === 'admin' ||
+          x.cls === me.cls ||
+          x.cls === 'ALL'
+        );
+
+      }
+    );
+
+
+  let html =
+    filtered.map(d => {
+
+      let x =
+        d.data();
+
+
+      const canDeleteThis =
+        canDelete &&
+        (
+          me.role === 'admin' ||
+          x.cls === me.cls ||
+          x.cls === 'ALL'
+        );
+
+
+      let daysLeftHTML = '';
+      if(!isAttendance && x.deadline) {
+        daysLeftHTML = `<div class="mt-1">${renderDaysLeft(x.deadline)}</div>`;
+      }
+
+
+      let subjectHTML = '';
+      if(isHomework && x.subject) {
+        subjectHTML = `<div class="font-bold text-indigo-700 text-sm mb-1">📚 ${x.subject}</div>`;
+      }
+
+
+      return `
+        <div class="p-2 ${bgClass} rounded flex justify-between items-start">
+
+          <div class="flex-1">
+
+            ${subjectHTML}
+
+            <p>
+              ${x.t}
+            </p>
+
+            <p class="text-[10px] text-slate-500">
+
+              ${x.d}
+              • Class:
+              ${x.cls || 'All Classes'}
+
+            </p>
+
+            ${daysLeftHTML}
+
+          </div>
+
+
+          ${
+            canDeleteThis
+
+              ? `
+                <button
+                  onclick="delDoc('${colName}','${d.id}')"
+                  class="text-rose-600 text-xs font-bold ml-2 flex-shrink-0">
+
+                  X
+
+                </button>
+                `
+
+              : ''
+          }
+
+        </div>
+      `;
+
+    }).join('')
+
+    ||
+
+    `<p class="text-slate-400">
+      Data छैन
+     </p>`;
+
+
+  document.getElementById(
+    targetId
+  ).innerHTML =
+    html;
+
+}
+
+
+// Add homework
+
+document.getElementById(
+  'form-add-hw'
+).addEventListener(
+  'submit',
+  async (e) => {
+
+    e.preventDefault();
+
+
+    let cls =
+      document.getElementById(
+        'hw-class'
+      ).value;
+
+    let subject =
+      document.getElementById(
+        'hw-subject'
+      ).value;
+
+    let deadline =
+      document.getElementById(
+        'hw-deadline'
+      ).value;
+
+
+    if(me.role === 'teacher' && me.subject) {
+      subject = me.subject;
+    }
+
+
+    await addDoc(
+      collection(
+        db,
+        "homework"
+      ),
+      {
+        t:
+          document.getElementById(
+            'hw-txt'
+          ).value.trim(),
+
+        d:today,
+
+        cls:cls,
+
+        subject: subject,
+
+        deadline: deadline
+      }
+    );
+
+
+    e.target.reset();
+
+
+    if(
+      me.role === 'teacher'
+    ){
+
+      document.getElementById(
+        'hw-class'
+      ).value =
+        me.cls;
+
+    }
+
+  }
+);
+
+
+// Homework live
+
+function liveHW(){
+
+  onSnapshot(
+    collection(
+      db,
+      "homework"
+    ),
+    (snap) => {
+
+      let filteredDocs = snap.docs;
+
+      if(me.role === 'teacher' && me.subject) {
+        filteredDocs = filteredDocs.filter(d => d.data().subject === me.subject);
+      }
+
+      renderList(
+        'list-hw',
+
+        filteredDocs.sort(
+          (a,b) =>
+            (b.data().d || '')
+            .localeCompare(
+              a.data().d || ''
+            )
+        ),
+
+        'bg-slate-100',
+
+        'homework',
+
+        false,
+        true
+      );
+
+    }
+  );
+
+}
+
+
+// Add notice
+
+document.getElementById(
+  'form-add-notice'
+).addEventListener(
+  'submit',
+  async (e) => {
+
+    e.preventDefault();
+
+
+    let cls =
+      document.getElementById(
+        'nt-class'
+      ).value;
+
+    let deadline =
+      document.getElementById(
+        'nt-deadline'
+      ).value;
+
+
+    await addDoc(
+      collection(
+        db,
+        "notice"
+      ),
+      {
+        t:
+          document.getElementById(
+            'nt-txt'
+          ).value.trim(),
+
+        d:today,
+
+        cls:cls,
+
+        deadline: deadline
+      }
+    );
+
+
+    e.target.reset();
+
+
+    if(
+      me.role === 'teacher'
+    ){
+
+      document.getElementById(
+        'nt-class'
+      ).value =
+        me.cls;
+
+    }
+
+  }
+);
+
+
+// Notice live
+
+function liveNT(){
+
+  onSnapshot(
+    collection(
+      db,
+      "notice"
+    ),
+    (snap) =>
+
+      renderList(
+        'list-nt',
+
+        snap.docs.sort(
+          (a,b) =>
+            (b.data().d || '')
+            .localeCompare(
+              a.data().d || ''
+            )
+        ),
+
+        'bg-yellow-100',
+
+        'notice',
+
+        false,
+        false,
+        true
+      )
+
+  );
+
+}
+
+
+// Add event
+
+document.getElementById(
+  'form-add-ev'
+).addEventListener(
+  'submit',
+  async (e) => {
+
+    e.preventDefault();
+
+
+    let cls =
+      document.getElementById(
+        'ev-class'
+      ).value;
+
+    let date =
+      document.getElementById(
+        'ev-date'
+      ).value;
+
+
+    await addDoc(
+      collection(
+        db,
+        "events"
+      ),
+      {
+        t:
+          document.getElementById(
+            'ev-txt'
+          ).value.trim(),
+
+        d: date,
+
+        cls:cls,
+
+        deadline: date
+      }
+    );
+
+
+    e.target.reset();
+
+
+    if(
+      me.role === 'teacher'
+    ){
+
+      document.getElementById(
+        'ev-class'
+      ).value =
+        me.cls;
+
+    }
+
+  }
+);
+
+
+// Events live
+
+function liveEV(){
+
+  onSnapshot(
+    collection(
+      db,
+      "events"
+    ),
+    (snap) =>
+
+      renderList(
+        'list-ev',
+
+        snap.docs.sort(
+          (a,b) =>
+            (a.data().d || '')
+            .localeCompare(
+              b.data().d || ''
+            )
+        ),
+
+        'bg-emerald-100',
+
+        'events',
+
+        false,
+        false,
+        false,
+        true
+      )
+
+  );
+
+}
+
+
+// Student dashboard
+
+async function showStudent(id){
+
+  const snap =
+    await getDoc(
+      doc(
+        db,
+        "students",
+        id
+      )
+    );
+
+
+  if(!snap.exists())
+    return;
+
+
+  let s =
+    snap.data();
+
+
+  document.getElementById(
+    'stu-name'
+  ).innerText =
+    s.name;
+
+
+  document.getElementById(
+    'stu-cls'
+  ).innerText =
+    s.cls;
+
+
+  document.getElementById(
+    'stu-roll-view'
+  ).innerText =
+    s.roll;
+
+
+  // Attendance
+
+  onSnapshot(
+    collection(
+      db,
+      "attendance"
+    ),
+    (ss) => {
+
+      const docs =
+        ss.docs
+
+          .filter(
+            d =>
+              d.data().sid === id
+          )
+
+          .sort(
+            (a,b) =>
+              (b.data().d || '')
+              .localeCompare(
+                a.data().d || ''
+              )
+          );
+
+
+      document.getElementById(
+        'stu-att'
+      ).innerHTML =
+
+        docs.map(d => {
+
+          let a =
+            d.data();
+
+
+          return `
+            <div class="flex justify-between">
+
+              <span>
+                ${a.bs || adToBs(a.d)}
+              </span>
+
+              <span
+                class="${
+                  a.st === 'Present'
+                    ? 'text-emerald-600'
+                    : 'text-rose-600'
+                } font-bold">
+
+                ${a.st}
+
+              </span>
+
+            </div>
+          `;
+
+        }).join('')
+
+        ||
+
+        '<p class="text-slate-400">Data छैन</p>';
+
+    }
+  );
+
+
+  // Homework
+
+  onSnapshot(
+    collection(
+      db,
+      "homework"
+    ),
+    (ss) => {
+
+      const docs =
+        ss.docs
+
+          .filter(
+            d =>
+              (d.data().cls === s.cls ||
+              d.data().cls === 'ALL')
+          )
+
+          .sort(
+            (a,b) =>
+              (b.data().d || '')
+              .localeCompare(
+                a.data().d || ''
+              )
+          );
+
+
+      document.getElementById(
+        'stu-hw'
+      ).innerHTML =
+
+        docs.map(d => {
+
+          let x = d.data();
+          let daysHTML = x.deadline ? renderDaysLeft(x.deadline) : '';
+
+          return `
+            <div class="p-2 bg-slate-100 rounded mb-1">
+
+              ${x.subject ? `<div class="font-bold text-indigo-700 text-sm mb-1">📚 ${x.subject}</div>` : ''}
+
+              ${x.t}
+
+              <div class="text-[10px] text-slate-500">
+                ${x.d}
+              </div>
+
+              ${daysHTML ? `<div class="mt-1">${daysHTML}</div>` : ''}
+
+            </div>
+          `;
+
+        }).join('')
+
+        ||
+
+        '<p class="text-slate-400">Data छैन</p>';
+
+    }
+  );
+
+
+  // Notice
+
+  onSnapshot(
+    collection(
+      db,
+      "notice"
+    ),
+    (ss) => {
+
+      const docs =
+        ss.docs
+
+          .filter(
+            d =>
+              d.data().cls === s.cls ||
+              d.data().cls === 'ALL'
+          )
+
+          .sort(
+            (a,b) =>
+              (b.data().d || '')
+              .localeCompare(
+                a.data().d || ''
+              )
+          );
+
+
+      document.getElementById(
+        'stu-nt'
+      ).innerHTML =
+
+        docs.map(d => {
+
+          let x = d.data();
+          let daysHTML = x.deadline ? renderDaysLeft(x.deadline) : '';
+
+          return `
+            <div class="p-2 bg-yellow-100 rounded mb-1">
+
+              ${x.t}
+
+              <div class="text-[10px] text-slate-500">
+                ${x.d}
+              </div>
+
+              ${daysHTML ? `<div class="mt-1">${daysHTML}</div>` : ''}
+
+            </div>
+          `;
+
+        }).join('')
+
+        ||
+
+        '<p class="text-slate-400">Data छैन</p>';
+
+    }
+  );
+
+
+  // Calendar
+
+  onSnapshot(
+    collection(
+      db,
+      "events"
+    ),
+    (ss) => {
+
+      const docs =
+        ss.docs
+
+          .filter(
+            d =>
+              d.data().cls === s.cls ||
+              d.data().cls === 'ALL'
+          )
+
+          .sort(
+            (a,b) =>
+              (a.data().d || '')
+              .localeCompare(
+                b.data().d || ''
+              )
+          );
+
+
+      document.getElementById(
+        'stu-ev'
+      ).innerHTML =
+
+        docs.map(d => {
+
+          let x = d.data();
+          let daysHTML = x.deadline ? renderDaysLeft(x.deadline) : '';
+
+          return `
+            <div class="p-2 bg-emerald-100 rounded mb-1">
+
+              ${x.t}
+
+              <div class="text-[10px] text-slate-500">
+                ${x.d}
+              </div>
+
+              ${daysHTML ? `<div class="mt-1">${daysHTML}</div>` : ''}
+
+            </div>
+          `;
+
+        }).join('')
+
+        ||
+
+        '<p class="text-slate-400">Data छैन</p>';
+
+    }
+  );
+
+}
+
+</script>
+
+</body>
+</html>
