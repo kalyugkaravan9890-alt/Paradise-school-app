@@ -1,0 +1,1 @@
+# Paradise-school-app
